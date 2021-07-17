@@ -5,37 +5,49 @@ import android.view.MotionEvent
 import android.view.View
 
 class DragDetector(
-    private val onDragListener: OnDragListener = GestureDragListener()
+    private val onDragListener: OnDragListener? = GestureDragListener()
 ) {
     private val basePoint by lazy { PointF() }
 
-    fun onActionDown(event: MotionEvent) {
+    fun onActionDown(view: View, event: MotionEvent) {
         basePoint.set(event.x, event.y)
+        onDragListener?.onDragStart(view, event)
     }
 
-    fun onActionPointerUp(event: MotionEvent) {
+    fun onActionPointerUp(view: View, event: MotionEvent) {
         val index = if (event.actionIndex == 0) 1 else 0
         basePoint.set(event.getX(index), event.getY(index))
+        onDragListener?.onDragEnd(view, event)
     }
 
-    fun onDrag(view: View, event: MotionEvent) {
+    fun onActionMove(view: View, event: MotionEvent) {
         val distanceX = event.x - basePoint.x
         val distanceY = event.y - basePoint.y
 
-        onDragListener.onDrag(view, distanceX, distanceY)
+        onDragListener?.onDrag(view, event, distanceX, distanceY)
     }
 
     interface OnDragListener {
-        fun onDrag(view: View, distanceX: Float, distanceY: Float)
+        fun onDragStart(view: View, event: MotionEvent)
+        fun onDrag(view: View, event: MotionEvent, distanceX: Float, distanceY: Float)
+        fun onDragEnd(view: View, event: MotionEvent)
     }
 
     class GestureDragListener : OnDragListener {
-        override fun onDrag(view: View, distanceX: Float, distanceY: Float) {
+        override fun onDrag(view: View, event: MotionEvent, distanceX: Float, distanceY: Float) {
             val array = arrayOf(distanceX, distanceY).toFloatArray()
 
             view.matrix.mapVectors(array)
             view.translationX += array.first()
             view.translationY += array.last()
+        }
+
+        override fun onDragStart(view: View, event: MotionEvent) {
+
+        }
+
+        override fun onDragEnd(view: View, event: MotionEvent) {
+
         }
     }
 }

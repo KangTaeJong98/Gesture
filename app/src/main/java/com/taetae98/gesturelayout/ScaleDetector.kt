@@ -7,20 +7,27 @@ import kotlin.math.atan2
 import kotlin.math.sqrt
 
 class ScaleDetector(
-    private val onScaleListener: OnScaleListener = GestureScaleListener(),
-    private val onRotateListener: OnRotateListener = GestureRotateListener()
+    private val onScaleListener: OnScaleListener? = GestureScaleListener(),
+    private val onRotateListener: OnRotateListener? = GestureRotateListener()
 ) {
     private val baseVector by lazy { Vector() }
     private var baseDistance = 0F
 
-    fun onActionPointerDown(event: MotionEvent) {
+    fun onActionPointerDown(view: View, event: MotionEvent) {
         baseVector.set(event)
         baseDistance = distance(event)
+        onScaleListener?.onScaleStart(view, event)
+        onRotateListener?.onRotateStart(view, event)
     }
 
-    fun onScale(view: View, event: MotionEvent) {
-        onScaleListener.onScale(view, distance(event) / baseDistance)
-        onRotateListener.onRotate(view, view.rotation + Vector.getDegree(baseVector, Vector(event)))
+    fun onActionMove(view: View, event: MotionEvent) {
+        onScaleListener?.onScale(view, event, distance(event) / baseDistance)
+        onRotateListener?.onRotate(view, event, view.rotation + Vector.getDegree(baseVector, Vector(event)))
+    }
+
+    fun onActionPointerUp(view: View, event: MotionEvent) {
+        onScaleListener?.onScaleEnd(view, event)
+        onRotateListener?.onRotateEnd(view, event)
     }
 
     private fun distance(event: MotionEvent): Float {
@@ -31,23 +38,43 @@ class ScaleDetector(
     }
 
     interface OnScaleListener {
-        fun onScale(view: View, scale: Float)
+        fun onScaleStart(view: View, event: MotionEvent)
+        fun onScale(view: View, event: MotionEvent, scale: Float)
+        fun onScaleEnd(view: View, event: MotionEvent)
     }
 
     interface OnRotateListener {
-        fun onRotate(view: View, rotation: Float)
+        fun onRotateStart(view: View, event: MotionEvent)
+        fun onRotate(view: View, event: MotionEvent, rotation: Float)
+        fun onRotateEnd(view: View, event: MotionEvent)
     }
 
     class GestureRotateListener : OnRotateListener {
-        override fun onRotate(view: View, rotation: Float) {
+        override fun onRotateStart(view: View, event: MotionEvent) {
+
+        }
+
+        override fun onRotate(view: View, event: MotionEvent, rotation: Float) {
             view.rotation = rotation
+        }
+
+        override fun onRotateEnd(view: View, event: MotionEvent) {
+
         }
     }
 
     class GestureScaleListener : OnScaleListener {
-        override fun onScale(view: View, scale: Float) {
+        override fun onScaleStart(view: View, event: MotionEvent) {
+
+        }
+
+        override fun onScale(view: View, event: MotionEvent, scale: Float) {
             view.scaleX *= scale
             view.scaleY *= scale
+        }
+
+        override fun onScaleEnd(view: View, event: MotionEvent) {
+
         }
     }
 
