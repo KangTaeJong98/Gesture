@@ -57,7 +57,7 @@ class ScaleDetector(
         fun onRotateEnd(view: View, event: MotionEvent)
     }
 
-    class GestureRotateListener : OnRotateListener {
+    open class GestureRotateListener : OnRotateListener {
         override fun onRotateStart(view: View, event: MotionEvent) {
 
         }
@@ -71,7 +71,7 @@ class ScaleDetector(
         }
     }
 
-    class GestureScaleListener : OnScaleListener {
+    open class GestureScaleListener : OnScaleListener {
         override fun onScaleStart(view: View, event: MotionEvent) {
 
         }
