@@ -39,7 +39,6 @@ open class GestureListener : View.OnTouchListener {
         return true
     }
 
-
     private fun onActionDown(view: View, event: MotionEvent) {
         mode = Mode.DRAG
         point.set(event.x, event.y)
