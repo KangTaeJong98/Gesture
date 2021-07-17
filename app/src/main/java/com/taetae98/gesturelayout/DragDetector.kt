@@ -17,6 +17,10 @@ class DragDetector(
     fun onActionPointerUp(view: View, event: MotionEvent) {
         val index = if (event.actionIndex == 0) 1 else 0
         basePoint.set(event.getX(index), event.getY(index))
+        onDragListener?.onDragStart(view, event)
+    }
+
+    fun onActionCancel(view: View, event: MotionEvent) {
         onDragListener?.onDragEnd(view, event)
     }
 
@@ -33,7 +37,7 @@ class DragDetector(
         fun onDragEnd(view: View, event: MotionEvent)
     }
 
-    class GestureDragListener : OnDragListener {
+    open class GestureDragListener : OnDragListener {
         override fun onDrag(view: View, event: MotionEvent, distanceX: Float, distanceY: Float) {
             val array = arrayOf(distanceX, distanceY).toFloatArray()
 

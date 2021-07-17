@@ -22,10 +22,18 @@ class ScaleDetector(
 
     fun onActionMove(view: View, event: MotionEvent) {
         onScaleListener?.onScale(view, event, distance(event) / baseDistance)
-        onRotateListener?.onRotate(view, event, view.rotation + Vector.getDegree(baseVector, Vector(event)))
+        onRotateListener?.onRotate(view, event, view.rotation + Vector.getDegree(
+            baseVector,
+            Vector(event)
+        )
+        )
     }
 
     fun onActionPointerUp(view: View, event: MotionEvent) {
+        onActionCancel(view, event)
+    }
+
+    fun onActionCancel(view: View, event: MotionEvent) {
         onScaleListener?.onScaleEnd(view, event)
         onRotateListener?.onRotateEnd(view, event)
     }

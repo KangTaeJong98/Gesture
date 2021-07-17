@@ -22,7 +22,7 @@ class GestureListener(
             }
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
                 view.performClick()
-                onActionCancel()
+                onActionCancel(view, event)
             }
             MotionEvent.ACTION_MOVE -> {
                 if (mode == Mode.DRAG) {
@@ -36,6 +36,7 @@ class GestureListener(
         return true
     }
 
+
     private fun onActionDown(view: View, event: MotionEvent) {
         mode = Mode.DRAG
         dragDetector?.onActionDown(view, event)
@@ -43,7 +44,7 @@ class GestureListener(
 
     private fun onActionPointerDown(view: View, event: MotionEvent) {
         mode = Mode.SCALE
-        dragDetector?.onActionPointerUp(view, event)
+        dragDetector?.onActionCancel(view, event)
         scaleDetector?.onActionPointerDown(view, event)
     }
 
@@ -51,11 +52,11 @@ class GestureListener(
         when (mode) {
             Mode.DRAG -> {
                 mode = Mode.NONE
-                dragDetector?.onActionPointerUp(view, event)
+                dragDetector?.onActionCancel(view, event)
             }
             Mode.SCALE -> {
                 mode = Mode.DRAG
-                dragDetector?.onActionDown(view, event)
+                dragDetector?.onActionPointerUp(view, event)
                 scaleDetector?.onActionPointerUp(view, event)
             }
             else -> {
@@ -64,7 +65,21 @@ class GestureListener(
         }
     }
 
-    private fun onActionCancel() {
+    private fun onActionCancel(view: View, event: MotionEvent) {
+        when (mode) {
+            Mode.DRAG -> {
+                mode = Mode.NONE
+                dragDetector?.onActionCancel(view, event)
+            }
+            Mode.SCALE -> {
+                mode = Mode.DRAG
+                scaleDetector?.onActionCancel(view, event)
+            }
+            else -> {
+                mode = Mode.NONE
+            }
+        }
+
         mode = Mode.NONE
     }
 
