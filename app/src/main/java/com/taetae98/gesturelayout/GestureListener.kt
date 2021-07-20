@@ -11,8 +11,16 @@ open class GestureListener : View.OnTouchListener {
     private val point by lazy { PointF() }
     private val vector by lazy { Vector() }
     private var distance = 0F
-
     private var mode = Mode.NONE
+
+    companion object {
+        fun distance(event: MotionEvent): Float {
+            val x = event.getX(0) - event.getX(1)
+            val y = event.getY(0) - event.getY(1)
+
+            return sqrt(x*x + y*y)
+        }
+    }
 
     override fun onTouch(view: View, event: MotionEvent): Boolean {
         when (event.actionMasked) {
@@ -30,91 +38,15 @@ open class GestureListener : View.OnTouchListener {
                 onActionCancel(view, event)
             }
             MotionEvent.ACTION_MOVE -> {
-                if (mode == Mode.DRAG || mode == Mode.SCALE) {
-                    onActionMove(view, event)
+                if (mode == Mode.DRAG) {
+                    onActionDrag(view, event)
+                } else if (mode == Mode.SCALE) {
+                    onActionScale(view, event)
                 }
             }
         }
 
         return true
-    }
-
-    private fun onActionDown(view: View, event: MotionEvent) {
-        mode = Mode.DRAG
-        point.set(event.x, event.y)
-        onDragStart(view, event)
-    }
-
-    private fun onActionPointerDown(view: View, event: MotionEvent) {
-        mode = Mode.SCALE
-        vector.set(event)
-        distance = distance(event)
-
-        onDragEnd(view, event)
-        onScaleStart(view, event)
-        onRotateStart(view, event)
-    }
-
-    private fun onActionPointerUp(view: View, event: MotionEvent) {
-        when (mode) {
-            Mode.DRAG -> {
-                mode = Mode.NONE
-                onDragEnd(view, event)
-            }
-            Mode.SCALE -> {
-                mode = Mode.DRAG
-                val index = if (event.actionIndex == 0) 1 else 0
-                point.set(event.getX(index), event.getY(index))
-                onDragStart(view, event)
-                onScaleEnd(view, event)
-                onRotateEnd(view, event)
-            }
-            else -> {
-                mode = Mode.NONE
-            }
-        }
-    }
-
-    private fun onActionCancel(view: View, event: MotionEvent) {
-        if (mode == Mode.DRAG) {
-            onDragEnd(view, event)
-        } else if (mode == Mode.SCALE) {
-            onScaleEnd(view, event)
-            onRotateEnd(view, event)
-        }
-
-        mode = Mode.NONE
-    }
-
-    private fun onActionMove(view: View, event: MotionEvent) {
-        if (mode == Mode.DRAG) {
-            onActionDrag(view, event)
-        } else if (mode == Mode.SCALE) {
-            onActionScale(view, event)
-            onActionRotate(view, event)
-        }
-    }
-
-    private fun onActionDrag(view: View, event: MotionEvent) {
-        val distanceX = event.x - point.x
-        val distanceY = event.y - point.y
-
-        onDrag(view, event, distanceX, distanceY)
-    }
-
-    private fun onActionScale(view: View, event: MotionEvent) {
-        onScale(view, event, distance(event) / distance)
-    }
-
-    private fun onActionRotate(view: View, event: MotionEvent) {
-        onRotate(view, event, view.rotation + Vector.getDegree(vector, Vector(event)))
-    }
-
-    private fun distance(event: MotionEvent): Float {
-        val x = event.getX(0) - event.getX(1)
-        val y = event.getY(0) - event.getY(1)
-
-        return sqrt(x*x + y*y)
     }
 
     open fun onDrag(view: View, event: MotionEvent, distanceX: Float, distanceY: Float) {
@@ -156,6 +88,82 @@ open class GestureListener : View.OnTouchListener {
 
     open fun onRotateEnd(view: View, event: MotionEvent) {
 
+    }
+
+    private fun onActionDrag(view: View, event: MotionEvent) {
+        val distanceX = event.x - point.x
+        val distanceY = event.y - point.y
+
+        onDrag(view, event, distanceX, distanceY)
+    }
+
+    private fun onActionScale(view: View, event: MotionEvent) {
+        onScale(view, event, distance(event) / distance)
+        onRotate(view, event, view.rotation + Vector.getDegree(vector, Vector(event)))
+    }
+
+    private fun onActionDown(view: View, event: MotionEvent) {
+        mode = Mode.DRAG
+        onActionDragDown(view, event)
+    }
+
+    private fun onActionDragDown(view: View, event: MotionEvent) {
+        point.set(event.x, event.y)
+        onDragStart(view, event)
+    }
+
+    private fun onActionPointerDown(view: View, event: MotionEvent) {
+        mode = Mode.SCALE
+        onDragEnd(view, event)
+        onActionScalePointerDown(view, event)
+    }
+
+    private fun onActionScalePointerDown(view: View, event: MotionEvent) {
+        vector.set(event)
+        distance = distance(event)
+        onScaleStart(view, event)
+        onRotateStart(view, event)
+    }
+
+    private fun onActionPointerUp(view: View, event: MotionEvent) {
+        when (mode) {
+            Mode.DRAG -> {
+                mode = Mode.NONE
+                onDragEnd(view, event)
+            }
+            Mode.SCALE -> {
+                mode = Mode.DRAG
+                onActionDragPointerUp(view, event)
+                onScaleEnd(view, event)
+                onRotateEnd(view, event)
+            }
+            else -> {
+                mode = Mode.NONE
+            }
+        }
+    }
+
+    private fun onActionDragPointerUp(view: View, event: MotionEvent) {
+        val index = if (event.actionIndex == 0) 1 else 0
+        point.set(event.getX(index), event.getY(index))
+        onDragStart(view, event)
+    }
+
+    private fun onActionCancel(view: View, event: MotionEvent) {
+        when (mode) {
+            Mode.DRAG -> {
+                mode = Mode.NONE
+                onDragEnd(view, event)
+            }
+            Mode.SCALE -> {
+                mode = Mode.DRAG
+                onScaleEnd(view, event)
+                onRotateEnd(view, event)
+            }
+            else -> {
+                mode = Mode.NONE
+            }
+        }
     }
 
     enum class Mode {

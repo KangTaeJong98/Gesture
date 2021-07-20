@@ -16,7 +16,7 @@ class GestureLayout @JvmOverloads constructor(context: Context, attrs: Attribute
         }
     }
 
-    var listener by Delegates.observable(GestureListener()) { _, _, new ->
+    var listener by Delegates.observable<GestureListener?>(GestureListener()) { _, _, new ->
         for (view in children) {
             view.setOnTouchListener(new)
         }
@@ -31,6 +31,6 @@ class GestureLayout @JvmOverloads constructor(context: Context, attrs: Attribute
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         child.setPadding(childViewPadding)
-        child.setOnTouchListener(listener)
+        listener?.let { child.setOnTouchListener(it) }
     }
 }
