@@ -38,9 +38,9 @@ open class GestureListener : View.OnTouchListener {
                 onActionCancel(view, event)
             }
             MotionEvent.ACTION_MOVE -> {
-                if (mode == Mode.DRAG) {
+                if (mode == Mode.DRAG && event.pointerCount == 1) {
                     onActionDrag(view, event)
-                } else if (mode == Mode.SCALE) {
+                } else if (mode == Mode.SCALE && event.pointerCount == 2) {
                     onActionScale(view, event)
                 }
             }
