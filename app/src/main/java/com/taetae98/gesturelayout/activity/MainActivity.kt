@@ -26,57 +26,71 @@ class MainActivity : BindingActivity<ActivityMainBinding>(R.layout.activity_main
     }
 
     private fun onCreateOnGestureListener() {
-        binding.parent.listener = object : GestureListener() {
+        val listenenr  = object : GestureListener() {
             override fun onDrag(view: View, event: MotionEvent, distanceX: Float, distanceY: Float) {
                 super.onDrag(view, event, distanceX, distanceY)
                 viewModel.translationX.value = view.translationX
                 viewModel.translationY.value = view.translationY
-                viewModel.dragState.value = MainActivityViewModel.DRAG
+                viewModel.log.value += "Drag : $distanceX, $distanceY\n"
             }
 
             override fun onDragStart(view: View, event: MotionEvent) {
                 super.onDragStart(view, event)
-                viewModel.dragState.value = MainActivityViewModel.START
+                viewModel.log.value += "DragStart\n"
             }
 
             override fun onDragEnd(view: View, event: MotionEvent) {
                 super.onDragEnd(view, event)
-                viewModel.dragState.value = MainActivityViewModel.END
+                viewModel.log.value += "DragEnd\n"
             }
 
-            override fun onScaleStart(view: View, event: MotionEvent) {
-                super.onScaleStart(view, event)
-                viewModel.scaleState.value = MainActivityViewModel.START
+            override fun onZoomStart(view: View, event: MotionEvent) {
+                super.onZoomStart(view, event)
+                viewModel.log.value += "ZoomStart\n"
             }
 
-            override fun onScale(view: View, event: MotionEvent, scale: Float) {
-                super.onScale(view, event, scale)
-                viewModel.scaleX.value = view.scaleX
-                viewModel.scaleY.value = view.scaleY
-                viewModel.scaleState.value = MainActivityViewModel.SCALE
+            override fun onTouchStart(view: View, event: MotionEvent) {
+                super.onTouchStart(view, event)
+                viewModel.log.value += "TouchStart\n"
             }
 
-            override fun onScaleEnd(view: View, event: MotionEvent) {
-                super.onScaleEnd(view, event)
-                viewModel.scaleState.value = MainActivityViewModel.END
+            override fun onTouchEnd(view: View, event: MotionEvent) {
+                super.onTouchEnd(view, event)
+                viewModel.log.value += "TouchEnd\n"
+            }
+
+            override fun onSingleTap(view: View, event: MotionEvent) {
+                super.onSingleTap(view, event)
+                viewModel.log.value += "SingleTap\n"
+            }
+
+            override fun onZoom(view: View, event: MotionEvent, scale: Float) {
+                super.onZoom(view, event, scale)
+                viewModel.log.value += "Zoom : $scale\n"
+            }
+
+            override fun onZoomEnd(view: View, event: MotionEvent) {
+                super.onZoomEnd(view, event)
+                viewModel.log.value += "ZoomEnd\n"
             }
 
             override fun onRotateStart(view: View, event: MotionEvent) {
                 super.onRotateStart(view, event)
-                viewModel.rotateState.value = MainActivityViewModel.START
+                viewModel.log.value += "RotateStart\n"
             }
 
-            override fun onRotate(view: View, event: MotionEvent, rotation: Float) {
-                super.onRotate(view, event, rotation)
-                viewModel.rotation.value = view.rotation
-                viewModel.rotateState.value = MainActivityViewModel.ROTATE
+            override fun onRotate(view: View, event: MotionEvent, degree: Float) {
+                super.onRotate(view, event, degree)
+                viewModel.log.value += "Rotate : $degree\n"
             }
 
             override fun onRotateEnd(view: View, event: MotionEvent) {
                 super.onRotateEnd(view, event)
-                viewModel.rotateState.value = MainActivityViewModel.END
+                viewModel.log.value += "RotateEnd\n"
             }
         }
+
+        binding.textView.setOnTouchListener(listenenr)
     }
 
     private fun onCreateTextViewOnClickListener() {
