@@ -1,23 +1,74 @@
 [![](https://jitpack.io/v/KangTaeJong98/GestureLayout.svg)](https://jitpack.io/#KangTaeJong98/GestureLayout)
 
 # GestureLayout, GestureListener
+***
+### 🐘Dependency
+[more (Maven, sbt, leiningen)](https://jitpack.io/#KangTaeJong98/GestureLayout)
+```kotlin
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+```kotlin
+dependencies {
+    implementation 'com.github.KangTaeJong98:GestureLayout:$version'
+}
+```
+***
+### 😊 Introduce
 
-## GestureLayout
+#### GestureLayout
 * View를 추가할 경우 터치 영역을 넓히기 위한 Padding과 GestureListener를 자동으로 View에 설정합니다.
 * When you add View, automatically set Paddings and GestureListener to expand the touch area in View.
 
-## GestureListener
+#### GestureListener
 * 인스타그램 스토리처럼 View를 드래그, 확대/축소, 회전을 할 수 있는 Listener입니다.
 * It's a listener who can drag, zoom, and rotate View like an Instagram story.
 
 <img src="./readme/0.png" alt="0" width="25%"><img src="./readme/1.png" alt="1" width="25%"><img src="./readme/2.png" alt="2" width="25%"><img src="./readme/3.png" alt="3" width="25%">
+***
+### ⚡ Features
 
-## ⚡ Features
+#### 설명 : https://rkdxowhd98.tistory.com/193
+#### Explain : https://rkdxowhd98.tistory.com/193
+***
+#### GestureLayout
+```kotlin
+class GestureLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr, defStyleRes) {
+    var childViewPadding = 0
+        set(value) {
+            field = value
+            for (view in children) {
+                view.setPadding(value)
+            }
+        }
 
-### 설명 : https://rkdxowhd98.tistory.com/193
-### Explain : https://rkdxowhd98.tistory.com/193
+    var gestureListener: GestureListener? = GestureListener()
+        set(value) {
+            field = value
+            for (view in children) {
+                view.setOnTouchListener(value)
+            }
+        }
 
-### GestureLayout
+    init {
+        context.theme.obtainStyledAttributes(attrs, R.styleable.GestureLayout, defStyleAttr, defStyleRes).apply {
+            childViewPadding = getDimensionPixelSize(R.styleable.GestureLayout_childViewPadding, 0)
+        }
+    }
+
+    override fun onViewAdded(child: View) {
+        super.onViewAdded(child)
+        child.setPadding(childViewPadding)
+        child.setOnTouchListener(gestureListener)
+    }
+}
+```
+
+### GestureListener
 ```kotlin
 open class GestureListener(
     var dragSensitive: Float = 10F,
