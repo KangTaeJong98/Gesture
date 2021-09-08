@@ -5,11 +5,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import com.taetae98.gesturelayout.GestureListener
 import com.taetae98.gesturelayout.R
 import com.taetae98.gesturelayout.base.BindingActivity
 import com.taetae98.gesturelayout.databinding.ActivityMainBinding
 import com.taetae98.gesturelayout.viewmodel.MainActivityViewModel
+import com.taetae98.module.gesture.GestureListener
 
 class MainActivity : BindingActivity<ActivityMainBinding>(R.layout.activity_main) {
     private val viewModel by viewModels<MainActivityViewModel> { MainActivityViewModel.Factory(binding.textView) }

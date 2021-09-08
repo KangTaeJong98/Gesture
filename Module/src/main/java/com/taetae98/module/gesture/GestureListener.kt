@@ -1,4 +1,4 @@
-package com.taetae98.gesturelayout
+package com.taetae98.module.gesture
 
 import android.graphics.PointF
 import android.view.MotionEvent
@@ -14,9 +14,11 @@ open class GestureListener(
     var rotateSensitive: Float = 0F
 ) : View.OnTouchListener {
     private val mode by lazy { Mode() }
-    private val onePoint by lazy { PointF() }
-    private val twoPointVector by lazy { Vector() }
-    private var twoPointDistance = 0F
+
+    protected val onePoint by lazy { PointF() }
+    protected val twoPoint by lazy { PointF() }
+    protected val twoPointVector by lazy { Vector() }
+    protected var twoPointDistance = 0F
 
     companion object {
         private fun twoPointDistance(event: MotionEvent): Float {
@@ -63,7 +65,7 @@ open class GestureListener(
     }
 
     private fun actionSingleTap(view: View, event: MotionEvent) {
-        if (mode.onlyTouch()) {
+        if (mode.only(Mode.TOUCH)) {
             onSingleTap(view, event)
         }
     }
@@ -84,31 +86,47 @@ open class GestureListener(
     }
 
     private fun actionDown(view: View, event: MotionEvent) {
+        actionOnePointDown(view, event)
         actionTouchPointDown(view, event)
         actionDragPointDown(view, event)
     }
-    private fun actionTouchPointDown(view: View, event: MotionEvent) {
+
+    protected fun actionOnePointDown(view: View, event: MotionEvent) {
+        onePoint.set(event.x, event.y)
+    }
+
+    protected fun actionTouchPointDown(view: View, event: MotionEvent) {
         mode.add(Mode.TOUCH)
         onTouchStart(view, event)
     }
     private fun actionDragPointDown(view: View, event: MotionEvent) {
-        onePoint.set(event.x, event.y)
+
     }
 
     private fun actionPointerDown(view: View, event: MotionEvent) {
+        actionTwoPointPointerDown(view, event)
         actionDragPointerDown(view, event)
         actionZoomPointerDown(view, event)
         actionRotatePointerDown(view, event)
     }
+
+    private fun actionTwoPointPointerDown(view: View, event: MotionEvent) {
+        val x = event.getX(0) + event.getX(1)
+        val y = event.getY(0) + event.getY(1)
+        twoPoint.set(x/2F, y/2F)
+    }
+
     private fun actionDragPointerDown(view: View, event: MotionEvent) {
         if (mode.contain(Mode.DRAG)) {
             mode.minus(Mode.DRAG)
             onDragEnd(view, event)
         }
     }
+
     private fun actionZoomPointerDown(view: View, event: MotionEvent) {
         twoPointDistance = twoPointDistance(event)
     }
+
     private fun actionRotatePointerDown(view: View, event: MotionEvent) {
         twoPointVector.set(event)
     }
@@ -118,16 +136,19 @@ open class GestureListener(
         actionZoomPointerUp(view, event)
         actionRotatePointerUp(view, event)
     }
+
     private fun actionDragPointerUp(view: View, event: MotionEvent) {
         val index = if (event.actionIndex == 0) 1 else 0
         onePoint.set(event.getX(index), event.getY(index))
     }
+
     private fun actionZoomPointerUp(view: View, event: MotionEvent) {
         if (mode.contain(Mode.ZOOM)) {
             mode.minus(Mode.ZOOM)
             onZoomEnd(view, event)
         }
     }
+
     private fun actionRotatePointerUp(view: View, event: MotionEvent) {
         if (mode.contain(Mode.ROTATE)) {
             mode.minus(Mode.ROTATE)
@@ -142,12 +163,14 @@ open class GestureListener(
 
         mode.clear()
     }
+
     private fun actionTouchCancel(view: View, event: MotionEvent) {
         if (mode.contain(Mode.TOUCH)) {
             mode.minus(Mode.TOUCH)
             onTouchEnd(view, event)
         }
     }
+
     private fun actionDragCancel(view: View, event: MotionEvent) {
         if (mode.contain(Mode.DRAG)) {
             mode.minus(Mode.DRAG)
@@ -158,6 +181,7 @@ open class GestureListener(
     private fun calculateOnePointSensitive(view: View, event: MotionEvent) {
         calculateDragMotion(view, event)
     }
+
     private fun calculateDragMotion(view: View, event: MotionEvent) {
         if (!mode.contain(Mode.DRAG) && isDragMotion(view, event)) {
             mode.add(Mode.DRAG)
@@ -169,12 +193,14 @@ open class GestureListener(
         calculateZoomMotion(view, event)
         calculateRotateMotion(view, event)
     }
+
     private fun calculateZoomMotion(view: View, event: MotionEvent) {
         if (!mode.contain(Mode.ZOOM) && isZoomMotion(view, event)) {
             mode.add(Mode.ZOOM)
             onZoomStart(view, event)
         }
     }
+
     private fun calculateRotateMotion(view: View, event: MotionEvent) {
         if (!mode.contain(Mode.ROTATE) && isRotateMotion(view, event)) {
             mode.add(Mode.ROTATE)
@@ -185,6 +211,7 @@ open class GestureListener(
     private fun actionOnePoint(view: View, event: MotionEvent) {
         actionDrag(view, event)
     }
+
     private fun actionTwoPoint(view: View, event: MotionEvent) {
         actionZoom(view, event)
         actionRotate(view, event)
@@ -193,12 +220,15 @@ open class GestureListener(
     private fun getDragX(event: MotionEvent): Float {
         return event.x - onePoint.x
     }
+
     private fun getDragY(event: MotionEvent): Float {
         return event.y - onePoint.y
     }
+
     private fun getZoom(event: MotionEvent): Float {
         return twoPointDistance(event) / twoPointDistance
     }
+
     private fun getDegree(event: MotionEvent): Float {
         return Vector.getDegree(twoPointVector, Vector(event))
     }
@@ -208,9 +238,11 @@ open class GestureListener(
                 abs(getDragY(event)) >= dragSensitive) &&
                 event.pointerCount == 1
     }
+
     private fun isZoomMotion(view: View, event: MotionEvent): Boolean {
         return getZoom(event) >= zoomSensitive && event.pointerCount == 2
     }
+
     private fun isRotateMotion(view: View, event: MotionEvent): Boolean {
         return abs(getDegree(event)) >= rotateSensitive && event.pointerCount == 2
     }
@@ -274,9 +306,6 @@ open class GestureListener(
         }
         fun only(action: Int): Boolean {
             return bit == action
-        }
-        fun onlyTouch(): Boolean {
-            return log == TOUCH
         }
         fun contain(action: Int): Boolean {
             return (bit and action) == action
