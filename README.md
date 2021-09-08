@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/KangTaeJong98/GestureLayout.svg)](https://jitpack.io/#KangTaeJong98/GestureLayout)
+
 # GestureLayout, GestureListener
 
 ## GestureLayout
@@ -353,4 +355,3 @@ open class GestureListener(
     }
 }
 ```
-[![](https://jitpack.io/v/KangTaeJong98/GestureLayout.svg)](https://jitpack.io/#KangTaeJong98/GestureLayout)
