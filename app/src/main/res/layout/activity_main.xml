@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.taetae98.gesturelayout.viewmodel.MainActivityViewModel" />
+            type="com.taetae98.gesture.viewmodel.MainActivityViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,3 +1,3 @@
-rootProject.name = "GestureLayout"
+rootProject.name = "Gesture"
 include ':app'
-include ':Module'
+include ':modules'
