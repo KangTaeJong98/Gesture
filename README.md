@@ -3,7 +3,7 @@
 # GestureLayout, GestureListener
 ***
 ### 🐘Dependency
-[more (Maven, sbt, leiningen)](https://jitpack.io/#KangTaeJong98/GestureLayout)
+[more (Maven, sbt, leiningen)](https://jitpack.io/#KangTaeJong98/Gesture)
 ```kotlin
 allprojects {
     repositories {
