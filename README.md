@@ -14,7 +14,7 @@ allprojects {
 ```
 ```kotlin
 dependencies {
-    implementation 'com.github.KangTaeJong98:GestureLayout:$version'
+    implementation 'com.github.KangTaeJong98:Gesture:$version'
 }
 ```
 ***
