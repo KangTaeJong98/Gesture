@@ -1,4 +1,4 @@
-package com.taetae98.module.view
+package com.taetae98.module.gesture.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,8 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.core.view.setPadding
 import com.taetae98.module.R
-import com.taetae98.module.gesture.GestureListener
-import kotlin.properties.Delegates
+import com.taetae98.module.gesture.listener.GestureListener
 
 
 class GestureLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : ConstraintLayout(context, attrs, defStyleAttr, defStyleRes) {

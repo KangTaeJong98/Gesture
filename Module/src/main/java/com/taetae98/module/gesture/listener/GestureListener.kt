@@ -1,4 +1,4 @@
-package com.taetae98.module.gesture
+package com.taetae98.module.gesture.listener
 
 import android.graphics.PointF
 import android.view.MotionEvent
