@@ -3,7 +3,7 @@
 # GestureLayout, GestureListener
 ***
 ### 🐘Dependency
-#### Lastest Version : 1.0.2
+#### Lastest Version : 1.0.3
 [more (Maven, sbt, leiningen)](https://jitpack.io/#KangTaeJong98/Gesture)
 ```kotlin
 allprojects {

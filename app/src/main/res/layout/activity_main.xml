@@ -67,7 +67,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
             <TextView
-                android:text="@{viewModel.log}"
+
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

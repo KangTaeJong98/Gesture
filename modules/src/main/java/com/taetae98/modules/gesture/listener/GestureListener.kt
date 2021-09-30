@@ -15,13 +15,13 @@ open class GestureListener(
 ) : View.OnTouchListener {
     private val mode by lazy { Mode() }
 
-    protected val onePoint by lazy { PointF() }
-    protected val twoPoint by lazy { PointF() }
-    protected val twoPointVector by lazy { Vector() }
-    protected var twoPointDistance = 0F
+    protected open val onePoint by lazy { PointF() }
+    protected open val twoPoint by lazy { PointF() }
+    protected open val twoPointVector by lazy { Vector() }
+    protected open var twoPointDistance = 0F
 
     companion object {
-        private fun twoPointDistance(event: MotionEvent): Float {
+        fun twoPointDistance(event: MotionEvent): Float {
             val x = event.getX(0) - event.getX(1)
             val y = event.getY(0) - event.getY(1)
 
@@ -85,78 +85,74 @@ open class GestureListener(
         }
     }
 
-    private fun actionDown(view: View, event: MotionEvent) {
+    protected open fun actionDown(view: View, event: MotionEvent) {
         actionOnePointDown(view, event)
-        actionTouchPointDown(view, event)
-        actionDragPointDown(view, event)
+        actionTouchDown(view, event)
     }
 
-    protected fun actionOnePointDown(view: View, event: MotionEvent) {
+    protected open fun actionOnePointDown(view: View, event: MotionEvent) {
         onePoint.set(event.x, event.y)
     }
 
-    protected fun actionTouchPointDown(view: View, event: MotionEvent) {
+    protected open fun actionTouchDown(view: View, event: MotionEvent) {
         mode.add(Mode.TOUCH)
         onTouchStart(view, event)
     }
-    private fun actionDragPointDown(view: View, event: MotionEvent) {
 
-    }
-
-    private fun actionPointerDown(view: View, event: MotionEvent) {
+    protected open fun actionPointerDown(view: View, event: MotionEvent) {
         actionTwoPointPointerDown(view, event)
         actionDragPointerDown(view, event)
         actionZoomPointerDown(view, event)
         actionRotatePointerDown(view, event)
     }
 
-    private fun actionTwoPointPointerDown(view: View, event: MotionEvent) {
+    protected open fun actionTwoPointPointerDown(view: View, event: MotionEvent) {
         val x = event.getX(0) + event.getX(1)
         val y = event.getY(0) + event.getY(1)
         twoPoint.set(x/2F, y/2F)
     }
 
-    private fun actionDragPointerDown(view: View, event: MotionEvent) {
+    protected open fun actionDragPointerDown(view: View, event: MotionEvent) {
         if (mode.contain(Mode.DRAG)) {
             mode.minus(Mode.DRAG)
             onDragEnd(view, event)
         }
     }
 
-    private fun actionZoomPointerDown(view: View, event: MotionEvent) {
+    protected open fun actionZoomPointerDown(view: View, event: MotionEvent) {
         twoPointDistance = twoPointDistance(event)
     }
 
-    private fun actionRotatePointerDown(view: View, event: MotionEvent) {
+    protected open fun actionRotatePointerDown(view: View, event: MotionEvent) {
         twoPointVector.set(event)
     }
 
-    private fun actionPointerUp(view: View, event: MotionEvent) {
+    protected open fun actionPointerUp(view: View, event: MotionEvent) {
         actionDragPointerUp(view, event)
         actionZoomPointerUp(view, event)
         actionRotatePointerUp(view, event)
     }
 
-    private fun actionDragPointerUp(view: View, event: MotionEvent) {
+    protected open fun actionDragPointerUp(view: View, event: MotionEvent) {
         val index = if (event.actionIndex == 0) 1 else 0
         onePoint.set(event.getX(index), event.getY(index))
     }
 
-    private fun actionZoomPointerUp(view: View, event: MotionEvent) {
+    protected open fun actionZoomPointerUp(view: View, event: MotionEvent) {
         if (mode.contain(Mode.ZOOM)) {
             mode.minus(Mode.ZOOM)
             onZoomEnd(view, event)
         }
     }
 
-    private fun actionRotatePointerUp(view: View, event: MotionEvent) {
+    protected open fun actionRotatePointerUp(view: View, event: MotionEvent) {
         if (mode.contain(Mode.ROTATE)) {
             mode.minus(Mode.ROTATE)
             onRotateEnd(view, event)
         }
     }
 
-    private fun actionCancel(view: View, event: MotionEvent) {
+    protected open fun actionCancel(view: View, event: MotionEvent) {
         actionSingleTap(view, event)
         actionTouchCancel(view, event)
         actionDragCancel(view, event)
@@ -164,86 +160,86 @@ open class GestureListener(
         mode.clear()
     }
 
-    private fun actionTouchCancel(view: View, event: MotionEvent) {
+    protected open fun actionTouchCancel(view: View, event: MotionEvent) {
         if (mode.contain(Mode.TOUCH)) {
             mode.minus(Mode.TOUCH)
             onTouchEnd(view, event)
         }
     }
 
-    private fun actionDragCancel(view: View, event: MotionEvent) {
+    protected open fun actionDragCancel(view: View, event: MotionEvent) {
         if (mode.contain(Mode.DRAG)) {
             mode.minus(Mode.DRAG)
             onDragEnd(view, event)
         }
     }
 
-    private fun calculateOnePointSensitive(view: View, event: MotionEvent) {
+    protected open fun calculateOnePointSensitive(view: View, event: MotionEvent) {
         calculateDragMotion(view, event)
     }
 
-    private fun calculateDragMotion(view: View, event: MotionEvent) {
-        if (!mode.contain(Mode.DRAG) && isDragMotion(view, event)) {
+    protected open fun calculateDragMotion(view: View, event: MotionEvent) {
+        if (!mode.contain(Mode.DRAG) && isDragMotion(event)) {
             mode.add(Mode.DRAG)
             onDragStart(view, event)
         }
     }
 
-    private fun calculateTwoPointSensitive(view: View, event: MotionEvent) {
+    protected open fun calculateTwoPointSensitive(view: View, event: MotionEvent) {
         calculateZoomMotion(view, event)
         calculateRotateMotion(view, event)
     }
 
-    private fun calculateZoomMotion(view: View, event: MotionEvent) {
-        if (!mode.contain(Mode.ZOOM) && isZoomMotion(view, event)) {
+    protected open fun calculateZoomMotion(view: View, event: MotionEvent) {
+        if (!mode.contain(Mode.ZOOM) && isZoomMotion(event)) {
             mode.add(Mode.ZOOM)
             onZoomStart(view, event)
         }
     }
 
-    private fun calculateRotateMotion(view: View, event: MotionEvent) {
-        if (!mode.contain(Mode.ROTATE) && isRotateMotion(view, event)) {
+    protected open fun calculateRotateMotion(view: View, event: MotionEvent) {
+        if (!mode.contain(Mode.ROTATE) && isRotateMotion(event)) {
             mode.add(Mode.ROTATE)
             onRotateStart(view, event)
         }
     }
 
-    private fun actionOnePoint(view: View, event: MotionEvent) {
+    protected open fun actionOnePoint(view: View, event: MotionEvent) {
         actionDrag(view, event)
     }
 
-    private fun actionTwoPoint(view: View, event: MotionEvent) {
+    protected open fun actionTwoPoint(view: View, event: MotionEvent) {
         actionZoom(view, event)
         actionRotate(view, event)
     }
 
-    private fun getDragX(event: MotionEvent): Float {
+    protected open fun getDragX(event: MotionEvent): Float {
         return event.x - onePoint.x
     }
 
-    private fun getDragY(event: MotionEvent): Float {
+    protected open fun getDragY(event: MotionEvent): Float {
         return event.y - onePoint.y
     }
 
-    private fun getZoom(event: MotionEvent): Float {
+    protected open fun getZoom(event: MotionEvent): Float {
         return twoPointDistance(event) / twoPointDistance
     }
 
-    private fun getDegree(event: MotionEvent): Float {
+    protected open fun getDegree(event: MotionEvent): Float {
         return Vector.getDegree(twoPointVector, Vector(event))
     }
 
-    private fun isDragMotion(view: View, event: MotionEvent): Boolean {
+    protected open fun isDragMotion(event: MotionEvent): Boolean {
         return (abs(getDragX(event)) >= dragSensitive ||
                 abs(getDragY(event)) >= dragSensitive) &&
                 event.pointerCount == 1
     }
 
-    private fun isZoomMotion(view: View, event: MotionEvent): Boolean {
+    protected open fun isZoomMotion(event: MotionEvent): Boolean {
         return getZoom(event) >= zoomSensitive && event.pointerCount == 2
     }
 
-    private fun isRotateMotion(view: View, event: MotionEvent): Boolean {
+    protected open fun isRotateMotion(event: MotionEvent): Boolean {
         return abs(getDegree(event)) >= rotateSensitive && event.pointerCount == 2
     }
 
@@ -298,14 +294,14 @@ open class GestureListener(
             const val ROTATE = 0B1000
         }
 
-        private var log = NONE
+        private var log = bit
 
         fun clear() {
             bit = NONE
             log = NONE
         }
         fun only(action: Int): Boolean {
-            return bit == action
+            return log == action
         }
         fun contain(action: Int): Boolean {
             return (bit and action) == action
